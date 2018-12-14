@@ -1,0 +1,25 @@
+---
+title: "503Final"
+author: "Hong Xu"
+date: "December 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2) 
+library(treemapify)
+
+
+df <- read.csv("./Data/rate.csv")
+
+ggplot(df, aes(area = People_Killed, fill = People_Killed, label = Year)) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "italic", colour = "white", place = "centre",
+                    grow = TRUE)+labs(title ="Treemap for Number of People Killed in Each Year")
+
+ggsave(plot = last_plot(), "Treemap.jpg")
+```

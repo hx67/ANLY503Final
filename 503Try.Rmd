@@ -1,0 +1,291 @@
+---
+title: "503Final"
+author: "Hong Xu"
+date: "November 27, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+GT <- read.csv("./data/globalterrorismdb_0718dist.csv")
+
+GT[GT==""] <- NA #replace empty cells with NA
+```
+
+
+```{r}
+library(ggplot2)
+library(grid)
+library(leaflet)
+library(dplyr)
+```
+
+```{r}
+mapIND <- leaflet() %>% 
+  addTiles('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+  attribution='Map tiles by 
+    <a href="http://stamen.com">Stamen Design</a>, 
+    <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> 
+    &mdash; Map data &copy; 
+    <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>') %>%
+  setView(80, 24, zoom= 5)
+
+```
+
+
+```{r}
+ggplot(GT, aes(x = iyear))+ labs(title =" Terrorist attacks globally between 1970-2017 by attack type", x = "Years", y = "Number of Attacks", size = 15) + 
+  geom_bar(colour = "grey19", fill = "tomato3") + facet_wrap(~attacktype1_txt, ncol = 3) + 
+  theme(axis.text.x = element_text(hjust = 0.5, size = 10)) + theme(strip.text = element_text(size = 8, face = "bold"))
+
+#ggsave("Try.jpg", plot = last_plot())
+```
+
+```{r}
+ggplot(data=GT, aes(x=iyear,fill=General_region)) + geom_bar() + ggtitle("Yearly Terrorist Attacks by Region")+         
+    labs(x = "Years", y = "Number of Attacks")+ scale_fill_discrete(name = "Region")+scale_fill_manual(values=c('dodgerblue4','darkgoldenrod3','blue', 'deeppink4','green','darkorchid3'))
+
+
+ggsave(plot = last_plot(), "Bar.jpg")
+```
+
+```{r}
+# remove null target types
+GTclean = GT[which(GT$targsubtype1_txt !='.'), ] 
+
+ggplot(GTclean, aes(x = iyear))+ labs(title =" Terrorist attacks on India between 1970-2015 by TARGET type", x = "Years", y = "Number of Attacks") + 
+  geom_bar(colour = "grey19", fill = "tomato3") + facet_wrap(~targtype1_txt, ncol = 4) + theme(axis.text.x = element_text(hjust = 1, size = 12))+
+  theme(strip.text = element_text(size = 6, face = "bold"))
+
+ggsave(plot = last_plot(), "Try.jpg")
+```
+
+```{r}
+library(tidyverse) 
+library(data.table) 
+library(countrycode) #Matching country names
+library(plotly) #Interactive plots
+library(viridis) #Color scales
+library(tm) #Textmining for wordclouds
+library(wordcloud) #Generation of wordclouds
+library(leaflet) #Interactive maps
+library(maps) #Maps generating
+#(gganimate) #Animated plots!
+
+#Removing non-wanted warnings from the report
+options(warn=-1)
+
+#Reading data
+trWW <- as.tibble(read.csv("./data/globalterrorismdb_0718dist.csv"))
+```
+
+```{r}
+leaflet_map <- function(data, map_obj){
+  
+  #Merge map and data
+  map_obj$dataf <- left_join(data.frame(names = world$names, stringsAsFactors = F), 
+                            data, 
+                            by = c("names" = names(data)[2]))
+  
+  #Creating viridis numerical color palette
+  pal <- if(is.numeric(map_obj$dataf[[3]])){
+    colorNumeric("YlOrRd", 
+                 domain = map_obj$dataf[[3]], na.color = "white")
+  }else{
+    colorFactor(brewer.pal(12, "Paired"), 
+                domain = map_obj$dataf[[3]], na.color = "white")
+  }
+  
+  #Generating label texts
+  strings <- if(ncol(map_obj$dataf) == 3){
+    
+    #For a df with 3 columns (Region, Country, Variable)
+    sprintf(
+      paste("<strong>%s</strong><br/><strong>%s</strong><br/>", 
+            names(map_obj$dataf)[3], 
+            ifelse(is.numeric(map_obj$dataf[[3]]), ": %g ", ": %s ")),
+      map_obj$dataf[[1]], map_obj$dataf[[2]], map_obj$dataf[[3]])
+    
+  }else if(ncol(map_obj$dataf) == 4){
+    
+    #For a df with 4 columns (Region, Country, Color_Variable, Label_Variable)
+    sprintf(
+      paste("<strong>%s</strong><br/><strong>%s</strong><br/>", 
+            names(map_obj$dataf)[3], 
+            ifelse(is.numeric(map_obj$dataf[[3]]), ": %g ", ": %s "), 
+            paste("<br/>", 
+                  names(map_obj$dataf)[4], 
+                  ifelse(is.numeric(map_obj$dataf[[4]]), ": %g ", ": %s "))),
+      map_obj$dataf[[1]], map_obj$dataf[[2]], map_obj$dataf[[3]], map_obj$dataf[[4]])
+    
+  }else{
+    
+    #For a df with 4 columns (Region, Country, Color_Variable, Label_Variable, Label_Variable)
+    sprintf(
+      paste("<strong>%s</strong><br/><strong>%s</strong><br/>", 
+            names(map_obj$dataf)[3], 
+            ifelse(is.numeric(map_obj$dataf[[3]]), ": %g ", ": %s "), 
+            paste("<br/>", 
+                  names(map_obj$dataf)[4], 
+                  ifelse(is.numeric(map_obj$dataf[[4]]), ": %g ", ": %s ")),
+            paste("<br/>", 
+                  names(map_obj$dataf)[5], 
+                  ifelse(is.numeric(map_obj$dataf[[5]]), ": %g ", ": %s "))),
+      map_obj$dataf[[1]], map_obj$dataf[[2]], map_obj$dataf[[3]], map_obj$dataf[[4]], map_obj$dataf[[5]])
+    
+  }
+  
+  labels <- strings %>% lapply(htmltools::HTML)
+  
+  #Creating a leaflet basic map
+  m <- leaflet(map_obj) %>% addTiles()
+  
+  #Adding polygon with the variable
+  m <- m %>% addPolygons(
+    fillColor = ~pal(dataf[[3]]),
+    weight = 2,
+    opacity = 1,
+    color = "white",
+    dashArray = "3",
+    fillOpacity = 0.7,
+    highlight = highlightOptions(
+      weight = 5,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE, stroke = 1),
+    label = labels,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto"))
+  
+  #Adding legends to the plot
+  m <- m %>%
+    addLegend("bottomright", pal = pal, values = ~dataf[[3]],
+    title = names(map_obj$dataf)[3],
+    opacity = 1)
+  
+  return(m)
+}
+```
+
+```{r}
+#Getting world map polygons
+world <- map("world", fill = T, plot = F)
+
+#Changing countries' names
+trWW$country_txt <- str_replace(trWW$country_txt, "United Kingdom", "UK:Great Britain")
+trWW$country_txt <- str_replace(trWW$country_txt, "United States", "USA")
+trWW$country_txt <- str_replace(trWW$country_txt, "Republic of the Congo", "Republic of Congo")
+trWW$country_txt <- str_replace(trWW$country_txt, "People's Republic of the Congo", "Republic of Congo")
+```
+
+```{r}
+sources <- trWW %>% 
+  count(dbsource) %>%
+  transmute(Source = fct_reorder(dbsource, n), Frequency = n) %>%
+  arrange(desc(Frequency))
+```
+
+```{r}
+plot <- trWW %>%
+  count(iyear) %>%
+  mutate(Year = iyear, Frequency = n) %>%
+  ggplot(aes(Year, Frequency))+
+  geom_line(color = "firebrick2")+
+  geom_point(color = "firebrick2")+
+  labs(title = "Frequency of terrorist atacks by year") +
+  theme(legend.position = "none")
+
+ggplotly(plot)
+api_create(plot, filename = "freq-time")
+```
+
+```{r}
+#Obtaining frequencies by country and merging with the world map
+country_data <- trWW %>% 
+  group_by(region_txt, country_txt) %>% 
+  summarise(Events = n()) %>%
+  arrange(order(country_txt))
+
+#Ploting the map
+leaflet_map(country_data, world)
+
+```
+
+```{r}
+#Selecting rows to 
+descriptions <- trWW$summary[trWW$summary != ""] #Filters all filled descriptions
+
+descriptions <- iconv(descriptions,"WINDOWS-1252","UTF-8")
+
+words <- descriptions %>% as.character() %>%
+  removePunctuation() %>% #Removes punctuation
+  tolower() %>% #Converts all characters to lower case
+  removeWords(stopwords()) %>% #Remove english stop words
+  str_split(pattern = " ") %>% #Splits all lines into lists of words
+  unlist() #converts all lists into a single concatenated vector
+  
+word_freq <- words %>% as.tibble() %>% #Converts into tibble
+  filter(value != "", !str_detect(value, "^\\d*$")) %>% #Removes enpty and number-only words
+  count(value)
+
+wordcloud(word_freq$value, word_freq$n, max.words = 75, colors = c("gold", "chocolate", "darkorange",  "firebrick3"), random.order = FALSE)
+
+```
+
+```{r}
+plot <- trWW %>%
+  mutate(Year = iyear) %>%
+  group_by(Year) %>%
+  summarise(Proportion = mean(success)) %>%
+  ggplot(aes(Year, Proportion)) +
+  geom_line(color = "firebrick2")+
+  geom_point(color = "firebrick2")+
+  scale_y_continuous(limits = c(0,1))+
+  labs(title = "Success proportion over time")
+
+ggplotly(plot)
+```
+
+```{r}
+plot <- trWW %>%
+  mutate(Year = iyear, Killed = nkill) %>%
+  group_by(Year) %>%
+  summarise(Killed = sum(Killed, na.rm = T)) %>%
+  ggplot(aes(Year, Killed)) +
+  geom_line(stat = "identity", color = "firebrick2")+
+  geom_point(color = "firebrick2")+
+  labs(title = "Number of killed people over time")
+
+ggplotly(plot)
+
+```
+
+```{r}
+plot <- trWW %>%
+  mutate(Type = reorder(attacktype1_txt, nkill, sum, na.rm = T), Killed = nkill) %>%
+  group_by(Type) %>%
+  summarise(Killed = sum(Killed, na.rm = T)) %>%
+  ggplot(aes(Type, Killed)) +
+  geom_bar(stat = "identity", fill = "firebrick2")+
+  coord_flip()+
+  labs(title = "Number of people killed by Type")
+
+ggplotly(plot)
+
+```
+
+
+
+
+
+
+
+
+
+

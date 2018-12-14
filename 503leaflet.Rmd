@@ -1,0 +1,190 @@
+---
+title: "503leaflet"
+author: "Hong Xu"
+date: "December 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse) 
+library(data.table) 
+library(countrycode) #Matching country names
+library(plotly) #Interactive plots
+library(viridis) #Color scales
+library(tm) #Textmining for wordclouds
+library(wordcloud) #Generation of wordclouds
+library(leaflet) #Interactive maps
+library(maps) #Maps generating
+library(htmltools)
+#(gganimate) #Animated plots!
+
+#Removing non-wanted warnings from the report
+options(warn=-1)
+
+#Reading data
+trWW <- as.tibble(read.csv("./data/globalterrorismdb_0718dist.csv"))
+```
+
+```{r}
+#Getting world map polygons
+world <- map("world", fill = T, plot = F)
+
+#Changing countries' names
+trWW$country_txt <- str_replace(trWW$country_txt, "United Kingdom", "UK:Great Britain")
+trWW$country_txt <- str_replace(trWW$country_txt, "United States", "USA")
+trWW$country_txt <- str_replace(trWW$country_txt, "Republic of the Congo", "Republic of Congo")
+trWW$country_txt <- str_replace(trWW$country_txt, "People's Republic of the Congo", "Republic of Congo")
+```
+
+```{r}
+icon.glyphicon <- makeAwesomeIcon(icon = "flag", markerColor = "blue",
+                                  iconColor = "black", library = "glyphicon",
+                                  squareMarker =  TRUE)
+```
+
+```{r}
+leaflet_map <- function(data, data2, data3, map_obj){
+  
+  #Merge map and data
+  map_obj$dataf <- left_join(data.frame(names = world$names, stringsAsFactors = F), 
+                            data, 
+                            by = c("names" = names(data)[2]))
+  
+  #Creating viridis numerical color palette
+  pal <- if(is.numeric(map_obj$dataf[[3]])){
+    colorNumeric("YlOrRd", 
+                 domain = map_obj$dataf[[3]], na.color = "white")
+  }else{
+    colorFactor(brewer.pal(12, "Paired"), 
+                domain = map_obj$dataf[[3]], na.color = "white")
+  }
+  
+  #Generating label texts
+  strings <- if(ncol(map_obj$dataf) == 3){
+    
+    #For a df with 3 columns (Region, Country, Variable)
+    sprintf(
+      paste("<strong>%s</strong><br/><strong>%s</strong><br/>", 
+            names(map_obj$dataf)[3], 
+            ifelse(is.numeric(map_obj$dataf[[3]]), ": %g ", ": %s ")),
+      map_obj$dataf[[1]], map_obj$dataf[[2]], map_obj$dataf[[3]])
+    
+  }else if(ncol(map_obj$dataf) == 4){
+    
+    #For a df with 4 columns (Region, Country, Color_Variable, Label_Variable)
+    sprintf(
+      paste("<strong>%s</strong><br/><strong>%s</strong><br/>", 
+            names(map_obj$dataf)[3], 
+            ifelse(is.numeric(map_obj$dataf[[3]]), ": %g ", ": %s "), 
+            paste("<br/>", 
+                  names(map_obj$dataf)[4], 
+                  ifelse(is.numeric(map_obj$dataf[[4]]), ": %g ", ": %s "))),
+      map_obj$dataf[[1]], map_obj$dataf[[2]], map_obj$dataf[[3]], map_obj$dataf[[4]])
+    
+  }else{
+    
+    #For a df with 4 columns (Region, Country, Color_Variable, Label_Variable, Label_Variable)
+    sprintf(
+      paste("<strong>%s</strong><br/><strong>%s</strong><br/>", 
+            names(map_obj$dataf)[3], 
+            ifelse(is.numeric(map_obj$dataf[[3]]), ": %g ", ": %s "), 
+            paste("<br/>", 
+                  names(map_obj$dataf)[4], 
+                  ifelse(is.numeric(map_obj$dataf[[4]]), ": %g ", ": %s ")),
+            paste("<br/>", 
+                  names(map_obj$dataf)[5], 
+                  ifelse(is.numeric(map_obj$dataf[[5]]), ": %g ", ": %s "))),
+      map_obj$dataf[[1]], map_obj$dataf[[2]], map_obj$dataf[[3]], map_obj$dataf[[4]], map_obj$dataf[[5]])
+    
+  }
+  
+  labels <- strings %>% lapply(htmltools::HTML)
+  
+  #Creating a leaflet basic map
+  m <- leaflet(map_obj) %>% addTiles(group="Leaflet Map for Terrorism")
+  
+  #Adding polygon with the variable
+  m <- m %>% addPolygons(
+    fillColor = ~pal(dataf[[3]]),
+    weight = 2,
+    opacity = 1,
+    color = "white",
+    dashArray = "3",
+    fillOpacity = 0.7,
+    highlight = highlightOptions(
+      weight = 5,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE, stroke = 1),
+    label = labels,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto"))
+  
+  m <- m %>%addAwesomeMarkers(data=data2,
+                          lng=~longitude, lat=~latitude,icon=icon.glyphicon,
+                          popup=paste(
+                            "<strong>Year: </strong>", data2$iyear,
+                            "<br><strong>City: </strong>", data2$city, 
+                            "<br><strong>Country: </strong>", data2$country_txt, 
+                            "<br><strong>People Killed: </strong>", data2$nkill),
+                          clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F),
+                          labelOptions = labelOptions(noHide = F,
+                                                       direction = 'auto'),
+                          group = "Attacks Kill more than 1000 People")
+  
+  m <- m %>%addMarkers(data=data3,
+                          lng=~longitude, lat=~latitude,
+                          popup=paste(
+                            "<strong>Year: </strong>", data3$iyear,
+                            "<br><strong>City: </strong>", data3$city, 
+                            "<br><strong>Country: </strong>", data3$country_txt, 
+                            "<br><strong>People Killed: </strong>", data3$nkill),
+                          clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F),
+                          labelOptions = labelOptions(noHide = F,
+                                                       direction = 'auto'),
+                          group = "Attacks Kill more than 100 People")
+  
+  
+  #Adding legends to the plot
+  m <- m %>%
+    addLegend("bottomright", pal = pal, values = ~dataf[[3]],
+    title = names(map_obj$dataf)[3],
+    opacity = 1)
+  
+  m <- m %>% addLayersControl(
+    baseGroups = c("Attacks Kill more than 1000 People", "Attacks Kill more than 100 People"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+  return(m)
+}
+```
+
+```{r}
+trWW2 <- subset(trWW, nkill > 1000)
+trWW3 <- subset(trWW, nkill > 100)
+```
+
+```{r}
+#Obtaining frequencies by country and merging with the world map
+country_data <- trWW %>% 
+  group_by(region_txt, country_txt) %>% 
+  summarise(Events = n(), Killed=sum(nkill), Prop_value = sum(propvalue)) %>%
+  arrange(order(country_txt))
+
+#Ploting the map
+leaflet_map(country_data, trWW2, trWW3, world)
+```
+
+
+
+
+

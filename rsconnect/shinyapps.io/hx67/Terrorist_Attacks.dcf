@@ -1,0 +1,13 @@
+name: Terrorist_Attacks
+title: Terrorist_Attacks
+username:
+account: hx67
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 609971
+bundleId: 1750288
+url: https://hx67.shinyapps.io/Terrorist_Attacks/
+when: 1544322637.12532
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|503Try.Rmd|Clean_date.R|data_clean.py|Event_Map.html|gtd_plotly.py|Try.jpg|Data/globalterrorismdb_0718dist.csv|Data/globalterrorismdb2.csv|Data/mygtd.csv

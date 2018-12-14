@@ -1,0 +1,206 @@
+,country_txt,counts,nkill,nwound
+0,Afghanistan,12731,39384,44277
+1,Albania,80,42,126
+2,Algeria,2743,11066,9150
+3,Andorra,1,0,0
+4,Angola,499,3043,2455
+5,Antigua and Barbuda,1,0,0
+6,Argentina,815,490,755
+7,Armenia,24,37,71
+8,Australia,114,23,113
+9,Austria,115,30,126
+10,Azerbaijan,49,258,187
+11,Bahamas,5,1,0
+12,Bahrain,207,44,189
+13,Bangladesh,1648,1244,8225
+14,Barbados,3,76,3
+15,Belarus,13,14,212
+16,Belgium,154,79,516
+17,Belize,8,3,0
+18,Benin,8,0,8
+19,Bhutan,6,9,5
+20,Bolivia,314,42,166
+21,Bosnia-Herzegovina,159,79,150
+22,Botswana,10,11,11
+23,Brazil,273,203,160
+24,Brunei,6,0,1
+25,Bulgaria,52,28,36
+26,Burkina Faso,52,134,219
+27,Burundi,613,4205,2454
+28,Cambodia,259,543,786
+29,Cameroon,332,2347,1063
+30,Canada,96,365,146
+31,Central African Republic,283,1990,942
+32,Chad,91,1119,1681
+33,Chile,2365,228,755
+34,China,252,1008,1842
+35,Colombia,8306,14698,10328
+36,Comoros,5,1,2
+37,Costa Rica,67,17,38
+38,Croatia,57,248,73
+39,Cuba,30,8,10
+40,Cyprus,132,45,41
+41,Czech Republic,32,6,29
+42,Czechoslovakia,10,27,23
+43,Democratic Republic of the Congo,775,4069,1369
+44,Denmark,41,5,29
+45,Djibouti,22,274,162
+46,Dominica,3,3,10
+47,Dominican Republic,90,34,124
+48,East Germany (GDR),38,2,37
+49,East Timor,10,9,7
+50,Ecuador,220,54,79
+51,Egypt,2479,3869,4822
+52,El Salvador,5320,12053,5062
+53,Equatorial Guinea,2,2,3
+54,Eritrea,10,46,62
+55,Estonia,16,3,11
+56,Ethiopia,190,1765,1214
+57,Falkland Islands,1,0,0
+58,Fiji,17,8,18
+59,Finland,20,11,27
+60,France,2693,534,2516
+61,French Guiana,7,1,13
+62,French Polynesia,3,0,13
+63,Gabon,8,6,3
+64,Gambia,3,13,2
+65,Georgia,217,278,392
+66,Germany,735,84,683
+67,Ghana,19,19,13
+68,Greece,1275,325,733
+69,Grenada,5,9,21
+70,Guadeloupe,56,8,45
+71,Guatemala,2050,5167,1231
+72,Guinea,25,213,57
+73,Guinea-Bissau,9,17,27
+74,Guyana,26,41,24
+75,Haiti,213,336,300
+76,Honduras,323,307,240
+77,Hong Kong,26,4,102
+78,Hungary,46,6,17
+79,Iceland,4,0,0
+80,India,11960,19341,28980
+81,Indonesia,761,1238,2445
+82,International,1,1,12
+83,Iran,684,1673,4029
+84,Iraq,24636,78589,134690
+85,Ireland,307,117,31
+86,Israel,2183,1703,7946
+87,Italy,1565,420,1291
+88,Ivory Coast,74,268,171
+89,Jamaica,36,42,36
+90,Japan,402,66,6998
+91,Jordan,113,133,260
+92,Kazakhstan,27,39,21
+93,Kenya,683,1948,6263
+94,Kosovo,196,83,365
+95,Kuwait,76,63,300
+96,Kyrgyzstan,35,10,26
+97,Laos,27,27,73
+98,Latvia,17,2,36
+99,Lebanon,2478,4061,10904
+100,Lesotho,29,46,34
+101,Liberia,34,177,36
+102,Libya,2249,2598,3310
+103,Lithuania,8,1,2
+104,Luxembourg,16,0,6
+105,Macau,33,1,46
+106,Macedonia,118,49,60
+107,Madagascar,27,31,185
+108,Malawi,5,33,0
+109,Malaysia,99,152,101
+110,Maldives,22,20,122
+111,Mali,566,1432,1356
+112,Malta,23,5,12
+113,Martinique,12,0,1
+114,Mauritania,18,43,28
+115,Mauritius,2,0,1
+116,Mexico,524,780,683
+117,Moldova,21,13,88
+118,Montenegro,5,1,0
+119,Morocco,36,292,200
+120,Mozambique,363,2711,1518
+121,Myanmar,546,1280,1631
+122,Namibia,151,220,406
+123,Nepal,1215,1969,2151
+124,Netherlands,130,37,58
+125,New Caledonia,31,35,23
+126,New Hebrides,1,0,0
+127,New Zealand,20,1,2
+128,Nicaragua,1970,10598,1731
+129,Niger,154,1474,472
+130,Nigeria,3907,22682,10238
+131,North Korea,1,3,4
+132,North Yemen,6,3,1
+133,Norway,19,79,88
+134,Pakistan,14368,23822,42038
+135,Panama,127,38,83
+136,Papua New Guinea,89,79,91
+137,Paraguay,114,59,69
+138,People's Republic of the Congo,4,15,0
+139,Peru,6096,12771,4078
+140,Philippines,6908,9559,13367
+141,Poland,39,9,31
+142,Portugal,140,32,95
+143,Qatar,7,7,13
+144,Republic of the Congo,36,182,54
+145,Rhodesia,83,217,158
+146,Romania,6,4,9
+147,Russia,2194,4308,7441
+148,Rwanda,159,3236,922
+149,Saudi Arabia,371,672,1666
+150,Senegal,118,325,323
+151,Serbia,12,3,9
+152,Serbia-Montenegro,11,3,5
+153,Seychelles,2,0,0
+154,Sierra Leone,101,840,122
+155,Singapore,7,5,3
+156,Slovak Republic,18,7,11
+157,Slovenia,6,1,2
+158,Solomon Islands,4,4,0
+159,Somalia,4142,10273,8875
+160,South Africa,2016,2674,4545
+161,South Korea,38,10,134
+162,South Sudan,225,2634,1323
+163,South Vietnam,1,81,0
+164,South Yemen,2,0,2
+165,Soviet Union,78,96,150
+166,Spain,3249,1288,4935
+167,Sri Lanka,3022,15530,15561
+168,St. Kitts and Nevis,2,0,9
+169,St. Lucia,1,2,12
+170,Sudan,967,3883,2169
+171,Suriname,66,29,24
+172,Swaziland,16,6,3
+173,Sweden,132,22,80
+174,Switzerland,111,74,94
+175,Syria,2201,15229,14109
+176,Taiwan,50,60,87
+177,Tajikistan,188,307,1109
+178,Tanzania,59,73,234
+179,Thailand,3849,2742,7818
+180,Togo,48,76,34
+181,Trinidad and Tobago,22,6,35
+182,Tunisia,109,351,433
+183,Turkey,4292,6888,9899
+184,Turkmenistan,2,3,3
+185,Uganda,394,3065,1145
+186,Ukraine,1709,2261,2841
+187,United Arab Emirates,22,123,27
+188,United Kingdom,5235,3410,6106
+189,United States,2836,3771,20702
+190,Uruguay,82,6,6
+191,Uzbekistan,21,68,200
+192,Vanuatu,2,0,0
+193,Vatican City,1,0,3
+194,Venezuela,293,227,247
+195,Vietnam,12,1,27
+196,Wallis and Futuna,1,0,0
+197,West Bank and Gaza Strip,2227,1500,3014
+198,West Germany (FRG),541,97,862
+199,Western Sahara,5,1,4
+200,Yemen,3347,8776,9328
+201,Yugoslavia,203,119,281
+202,Zaire,50,324,211
+203,Zambia,62,70,62
+204,Zimbabwe,101,154,222
